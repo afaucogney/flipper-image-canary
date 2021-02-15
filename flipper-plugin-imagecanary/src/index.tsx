@@ -1,6 +1,7 @@
 import React from 'react';
 import {PluginClient, usePlugin, createState, useValue, Layout} from 'flipper-plugin';
 import {ManagedDataInspector, DetailSidebar} from 'flipper';
+import { List, Typography, Divider } from 'antd';
 
 type Data = {
   id: string;
@@ -57,37 +58,35 @@ export function Component() {
       instance.setSelection(selectedKeys[0])
   };
 
-   console.log("lf", data)
-   console.log("lf", data[0])
+
 
    if (Object.keys(data).length < 1) {
+         console.log("lf", data)
       return (
           <Layout.ScrollContainer>
                 <p>Empty</p>
           </Layout.ScrollContainer>
       );
    } else {
+      console.log("lf", Object.values(data))
+      console.log("lf0", Object.values(data)[0])
+      console.log("lf1", Object.values(data)[0][1])
        return (
-         <>
             <Layout.ScrollContainer>
-               <p>De la data</p>
-                 <ManagedDataInspector data={data} expandRoot={true}  onSelect={onSelect}/>
+                <Divider orientation="left">Large Size</Divider>
+                <List
+                  size="large"
+                  header={<div>Header</div>}
+                  footer={<div>Footer</div>}
+                  bordered
+                  dataSource={Object.values(data)[0]}
+                  renderItem={item => <List.Item>{renderItem(item)}</List.Item>}
+                />
             </Layout.ScrollContainer>
-            <DetailSidebar>
-                {selectedID && renderSidebar(data[0],selectedID)}
-             </DetailSidebar>
-                </>
        );
+
+       function renderItem(item) {
+          return Object.values(item)[0]
+       }
    }
-      function renderSidebar(row: Row, selectedId :number) {
-           console.log("row: ", row)
-           console.log("id: ", selectedId)
-           console.log("row: ", filter(row,selectedId))
-         return (
-           <Layout.Container gap pad>
-             <Typography.Title level={4}>Extras</Typography.Title>
-             <ManagedDataInspector data={row} expandRoot={true} />
-           </Layout.Container>
-         );
-     }
 }

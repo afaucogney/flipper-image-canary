@@ -511,5 +511,9 @@ class ImageCanaryFlipperPlugin(app: Application) :
     private fun FlipperObject.addAndSend() {
         issues.put(this)
         issues.build().send()
+//        FlipperObject.Builder()
+//            .put("tutu",issues.build())
+//            .build()
+//            .send()
     }
 }
