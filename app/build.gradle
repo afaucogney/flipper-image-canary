@@ -48,4 +48,10 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    // Flipper
+    implementation deps.flipper_core
+    implementation deps.flipper_soloader
+    implementation deps.flipper_reflect
+    implementation project(':flipper-image-canary')
 }

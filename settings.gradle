@@ -1,2 +1,3 @@
 include ':app'
+include ':flipper-image-canary'
 rootProject.name = "Flipper Image Canary"
