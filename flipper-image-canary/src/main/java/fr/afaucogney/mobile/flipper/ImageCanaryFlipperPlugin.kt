@@ -24,7 +24,7 @@ import fr.afaucogney.mobile.flipper.internal.image.ImageUtil
 import java.lang.ref.WeakReference
 
 
-class FlipperFragmentManagerPlugin(app: Application) :
+class ImageCanaryFlipperPlugin(app: Application) :
     Application.ActivityLifecycleCallbacks,
     FlipperPlugin {
 
@@ -46,8 +46,7 @@ class FlipperFragmentManagerPlugin(app: Application) :
      * Setup the unique id of the plugin
      */
     override fun getId(): String {
-//        return "ImageCanaryFlipper"
-        return "LifecycleFlipper"
+        return "ImageCanaryFlipper"
     }
 
     /**
@@ -57,7 +56,8 @@ class FlipperFragmentManagerPlugin(app: Application) :
      */
     override fun onConnect(connection: FlipperConnection?) {
         this.connection = connection
-        activityMap.forEach { (_, u) -> connection?.send("newData", u.build()) }
+//        activityMap.forEach { (_, u) -> connection?.send("newData", u.build()) }
+        issues.build().send()
     }
 
     /**
@@ -71,125 +71,125 @@ class FlipperFragmentManagerPlugin(app: Application) :
      * Plugin doe run in background
      */
     override fun runInBackground(): Boolean {
-        return true
+        return false
     }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // FLIPPER
-    ///////////////////////////////////////////////////////////////////////////
-
+//
+//    ///////////////////////////////////////////////////////////////////////////
+//    // FLIPPER
+//    ///////////////////////////////////////////////////////////////////////////
+//
     companion object {
-        const val FID = "id"
-        const val NAME = "name"
-        const val FULL_NAME = "fullName"
-        const val FRAGMENTS = "fragments"
-        const val TYPE = "type"
-        const val LIFE_CYCLE_EVENT = "lifeCycle"
-        const val BACK_STACK = "backStack"
+//        const val FID = "id"
+//        const val NAME = "name"
+//        const val FULL_NAME = "fullName"
+//        const val FRAGMENTS = "fragments"
+//        const val TYPE = "type"
+//        const val LIFE_CYCLE_EVENT = "lifeCycle"
+//        const val BACK_STACK = "backStack"
         const val NEW_DATA = "newData"
-        const val TRASH = "trash"
+//        const val TRASH = "trash"
     }
-
-    private enum class FlipperObjectType {
-        ACTIVITY,
-        FRAGMENT
-    }
-
-    private val FlipperObjectType.key: String
-        get() = this.toString().toLowerCase()
-
-    ///////////////////////////////////////////////////////////////////////////
-    // DOMAIN
-    ///////////////////////////////////////////////////////////////////////////
-
-    // Activity
-    private val Activity.name: String
-        get() = this.javaClass.simpleName
-
-    private val Activity.fullName: String
-        get() = this.toString()
-
-    private val Activity.fid: String
-        get() = this.fullName.split("@")[1]
-
-    private val Activity.type: String
-        get() = FlipperObjectType.ACTIVITY.key
-
-    private enum class ActivityLifeCycle {
-        ON_ACTIVITY_CREATED,
-        ON_ACTIVITY_STARTED,
-        ON_ACTIVITY_RESUMED,
-        ON_ACTIVITY_PAUSED,
-        ON_ACTIVITY_STOPPED,
-        ON_ACTIVITY_SAVE_INSTANCE_STATE,
-        ON_ACTIVITY_DESTROYED
-    }
-
-    private val ActivityLifeCycle.key: String
-        get() = this.toString().toLowerCase()
-
-    // Fragment
-    private val Fragment.name: String
-        get() = this.javaClass.simpleName
-
-    private val Fragment.fullName: String
-        get() = this.toString()
-
-    private val Fragment.fid: String
-        get() = this.fullName.split("{")[1].split("}")[0]
-
-    private val Fragment.type: String
-        get() = FlipperObjectType.FRAGMENT.key
-
-    private enum class FragmentLifeCycle {
-        ON_FRAGMENT_ATTACHED,
-        ON_FRAGMENT_CREATED,
-        ON_FRAGMENT_VIEW_CREATED,
-        ON_FRAGMENT_ACTIVITY_CREATED,
-        ON_FRAGMENT_STARTED,
-        ON_FRAGMENT_RESUMED,
-        ON_FRAGMENT_PAUSED,
-        ON_FRAGMENT_STOPPED,
-        ON_FRAGMENT_SAVE_INSTANCE_STATE,
-        ON_FRAGMENT_VIEW_DESTROYED,
-        ON_FRAGMENT_DESTROYED,
-        ON_FRAGMENT_DETACHED,
-    }
-
-    private val FragmentLifeCycle.key: String
-        get() = this.toString().toLowerCase()
-
-    private val trashMap = FlipperArray.Builder()
-    private val activityMap = mutableMapOf<String, FlipperObject.Builder>()
-
-    //    private val fragmentMap = mutableMapOf<String, Map<String, FlipperObject.Builder>>()
-    private val fragmentMap = mutableMapOf<String, HashMap<String, FlipperObject.Builder>>()
-
-    private val backStackListener = FragmentManager.OnBackStackChangedListener {
-
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // FLIPPER TRANSMISSION
-    ///////////////////////////////////////////////////////////////////////////
-
-    private fun pushActivityEvent(
-        activity: Activity,
-        event: ActivityLifeCycle
-    ) {
-        activity.saveAndMapToFlipperObjectBuilder(event)
-            .build()
-            .send()
-    }
-
-    private fun pushFragmentEvent(
-        fragment: Fragment,
-        event: FragmentLifeCycle
-    ) {
-        fragment.saveAndMapToFlipperObjectBuilder(event)
-            .build()
-            .send()
-    }
+//
+//    private enum class FlipperObjectType {
+//        ACTIVITY,
+//        FRAGMENT
+//    }
+//
+//    private val FlipperObjectType.key: String
+//        get() = this.toString().toLowerCase()
+//
+//    ///////////////////////////////////////////////////////////////////////////
+//    // DOMAIN
+//    ///////////////////////////////////////////////////////////////////////////
+//
+//    // Activity
+//    private val Activity.name: String
+//        get() = this.javaClass.simpleName
+//
+//    private val Activity.fullName: String
+//        get() = this.toString()
+//
+//    private val Activity.fid: String
+//        get() = this.fullName.split("@")[1]
+//
+//    private val Activity.type: String
+//        get() = FlipperObjectType.ACTIVITY.key
+//
+//    private enum class ActivityLifeCycle {
+//        ON_ACTIVITY_CREATED,
+//        ON_ACTIVITY_STARTED,
+//        ON_ACTIVITY_RESUMED,
+//        ON_ACTIVITY_PAUSED,
+//        ON_ACTIVITY_STOPPED,
+//        ON_ACTIVITY_SAVE_INSTANCE_STATE,
+//        ON_ACTIVITY_DESTROYED
+//    }
+//
+//    private val ActivityLifeCycle.key: String
+//        get() = this.toString().toLowerCase()
+//
+//    // Fragment
+//    private val Fragment.name: String
+//        get() = this.javaClass.simpleName
+//
+//    private val Fragment.fullName: String
+//        get() = this.toString()
+//
+//    private val Fragment.fid: String
+//        get() = this.fullName.split("{")[1].split("}")[0]
+//
+//    private val Fragment.type: String
+//        get() = FlipperObjectType.FRAGMENT.key
+//
+//    private enum class FragmentLifeCycle {
+//        ON_FRAGMENT_ATTACHED,
+//        ON_FRAGMENT_CREATED,
+//        ON_FRAGMENT_VIEW_CREATED,
+//        ON_FRAGMENT_ACTIVITY_CREATED,
+//        ON_FRAGMENT_STARTED,
+//        ON_FRAGMENT_RESUMED,
+//        ON_FRAGMENT_PAUSED,
+//        ON_FRAGMENT_STOPPED,
+//        ON_FRAGMENT_SAVE_INSTANCE_STATE,
+//        ON_FRAGMENT_VIEW_DESTROYED,
+//        ON_FRAGMENT_DESTROYED,
+//        ON_FRAGMENT_DETACHED,
+//    }
+//
+//    private val FragmentLifeCycle.key: String
+//        get() = this.toString().toLowerCase()
+//
+//    private val trashMap = FlipperArray.Builder()
+//    private val activityMap = mutableMapOf<String, FlipperObject.Builder>()
+//
+//    //    private val fragmentMap = mutableMapOf<String, Map<String, FlipperObject.Builder>>()
+//    private val fragmentMap = mutableMapOf<String, HashMap<String, FlipperObject.Builder>>()
+//
+//    private val backStackListener = FragmentManager.OnBackStackChangedListener {
+//
+//    }
+//
+//    ///////////////////////////////////////////////////////////////////////////
+//    // FLIPPER TRANSMISSION
+//    ///////////////////////////////////////////////////////////////////////////
+//
+//    private fun pushActivityEvent(
+//        activity: Activity,
+//        event: ActivityLifeCycle
+//    ) {
+//        activity.saveAndMapToFlipperObjectBuilder(event)
+//            .build()
+//            .send()
+//    }
+//
+//    private fun pushFragmentEvent(
+//        fragment: Fragment,
+//        event: FragmentLifeCycle
+//    ) {
+//        fragment.saveAndMapToFlipperObjectBuilder(event)
+//            .build()
+//            .send()
+//    }
 
     private fun FlipperObject.send() {
         this.apply { connection?.send(NEW_DATA, this) }
@@ -198,63 +198,63 @@ class FlipperFragmentManagerPlugin(app: Application) :
     private fun FlipperArray.send() {
         this.apply { connection?.send(NEW_DATA, this) }
     }
-
-    private fun Fragment.moveToTrash() {
-        trashMap.put(fragmentMap[this.name]!![this.fid])
-        fragmentMap[this.name]!!.remove(this.fid)
-        this.requireActivity()
-    }
-
-    ///////////////////////////////////////////////////////////////////////////
-    // ACTIVITY HELPER
-    ///////////////////////////////////////////////////////////////////////////
-
-    private fun Activity.toFlipperObjectBuilder(): FlipperObject.Builder {
-        return FlipperObject.Builder()
-            .put(FID, this.fid)
-            .put(NAME, this.name)
-            .put(FULL_NAME, this.fullName)
-            .put(TYPE, FlipperObjectType.ACTIVITY.key)
-    }
-
-    private fun FlipperObject.Builder.addLifeCycleEvent(event: ActivityLifeCycle?): FlipperObject.Builder {
-        return if (event != null)
-            this.put(LIFE_CYCLE_EVENT, event.key)
-        else this
-    }
-
-    private fun FlipperObject.Builder.addBackStackInfo(activity: Activity): FlipperObject.Builder {
-        return this.apply {
-            if (activity is FragmentActivity) {
-                val backStack = FlipperObject.Builder()
-                for (i in 0 until activity.supportFragmentManager.backStackEntryCount) {
-                    val entry = activity.supportFragmentManager.getBackStackEntryAt(i)
-                    backStack.put(entry.id.toString(), entry.name)
-                }
-                put(BACK_STACK, backStack)
-            }
-        }
-    }
-
-    private fun Activity.saveAndMapToFlipperObjectBuilder(event: ActivityLifeCycle? = null): FlipperObject.Builder {
-        if (!activityMap.containsKey(this.fid)) {
-            activityMap[this.fid] = this.toFlipperObjectBuilder()
-        }
-        return activityMap[this.fid]!!
-            .addLifeCycleEvent(event)
-            .addBackStackInfo(this)
-            .put(FRAGMENTS, fragmentMap.toFO())
-            .let {
-                FlipperObject.Builder()
-                    .put(this.fid, it)
-
-            }
-            .let {
-                FlipperObject.Builder()
-                    .put(this.name, it)
-                    .put(TRASH, trashMap)
-            }
-    }
+//
+//    private fun Fragment.moveToTrash() {
+//        trashMap.put(fragmentMap[this.name]!![this.fid])
+//        fragmentMap[this.name]!!.remove(this.fid)
+//        this.requireActivity()
+//    }
+//
+//    ///////////////////////////////////////////////////////////////////////////
+//    // ACTIVITY HELPER
+//    ///////////////////////////////////////////////////////////////////////////
+//
+//    private fun Activity.toFlipperObjectBuilder(): FlipperObject.Builder {
+//        return FlipperObject.Builder()
+//            .put(FID, this.fid)
+//            .put(NAME, this.name)
+//            .put(FULL_NAME, this.fullName)
+//            .put(TYPE, FlipperObjectType.ACTIVITY.key)
+//    }
+//
+//    private fun FlipperObject.Builder.addLifeCycleEvent(event: ActivityLifeCycle?): FlipperObject.Builder {
+//        return if (event != null)
+//            this.put(LIFE_CYCLE_EVENT, event.key)
+//        else this
+//    }
+//
+//    private fun FlipperObject.Builder.addBackStackInfo(activity: Activity): FlipperObject.Builder {
+//        return this.apply {
+//            if (activity is FragmentActivity) {
+//                val backStack = FlipperObject.Builder()
+//                for (i in 0 until activity.supportFragmentManager.backStackEntryCount) {
+//                    val entry = activity.supportFragmentManager.getBackStackEntryAt(i)
+//                    backStack.put(entry.id.toString(), entry.name)
+//                }
+//                put(BACK_STACK, backStack)
+//            }
+//        }
+//    }
+//
+//    private fun Activity.saveAndMapToFlipperObjectBuilder(event: ActivityLifeCycle? = null): FlipperObject.Builder {
+//        if (!activityMap.containsKey(this.fid)) {
+//            activityMap[this.fid] = this.toFlipperObjectBuilder()
+//        }
+//        return activityMap[this.fid]!!
+//            .addLifeCycleEvent(event)
+//            .addBackStackInfo(this)
+//            .put(FRAGMENTS, fragmentMap.toFO())
+//            .let {
+//                FlipperObject.Builder()
+//                    .put(this.fid, it)
+//
+//            }
+//            .let {
+//                FlipperObject.Builder()
+//                    .put(this.name, it)
+//                    .put(TRASH, trashMap)
+//            }
+//    }
 //
 //    private fun Activity.toFlipperObject(event: ActivityLifeCycle? = null): FlipperObject.Builder {
 //        if (!activityMap.containsKey(this.fid)) {
@@ -279,73 +279,73 @@ class FlipperFragmentManagerPlugin(app: Application) :
     ///////////////////////////////////////////////////////////////////////////
     // FRAGMENT HELPER
     ///////////////////////////////////////////////////////////////////////////
-
-    private fun Fragment.toFlipperObjectBuilder(): FlipperObject.Builder {
-        return FlipperObject.Builder()
-            .put(FID, this.fid)
-            .put(NAME, this.name)
-            .put(FULL_NAME, this.fullName)
-            .put(TYPE, FlipperObjectType.FRAGMENT.key)
-    }
-
-    private fun FlipperObject.Builder.addLifeCycleEvent(event: FragmentLifeCycle): FlipperObject.Builder {
-        return this.put(LIFE_CYCLE_EVENT, event.key)
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun FlipperObject.Builder.addNavBackStack(fragment: Fragment): FlipperObject.Builder {
-        return this
-            .let {
-                if (fragment.name == "NavHostFragment") {
-                    try {
-                        val result = FlipperObject.Builder()
-                        fragment.findNavController()
-                            .backStack
-                            .forEachIndexed { index, navBackStackEntry ->
-                                result.put(
-                                    index.toString(),
-                                    navBackStackEntry.destination.displayName
-                                )
-                            }
-                        it.put(BACK_STACK, result)
-                    } catch (e: IllegalStateException) {
-                        it
-                    }
-                } else {
-                    it
-                }
-            }
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun Fragment.saveAndMapToFlipperObjectBuilder(event: FragmentLifeCycle): FlipperObject.Builder {
-        return this.toFlipperObjectBuilder()
-            .addLifeCycleEvent(event)
-            .addNavBackStack(this)
-            .also { builder ->
-                if (!fragmentMap.containsKey(this.name)) {
-                    fragmentMap[this.name] = hashMapOf(this.fid to builder)
-                } else {
-                    fragmentMap[this.name]!![this.fid] = builder
-                }
-            }
-            .let {
-                this.requireActivity()
-                    .saveAndMapToFlipperObjectBuilder()
-            }
-    }
-
-    private fun MutableMap<String, HashMap<String, FlipperObject.Builder>>.toFO(): FlipperObject {
-        val result = FlipperObject.Builder()
-        this.toSortedMap().forEach { (t, u) ->
-            val f = FlipperObject.Builder()
-            u.toSortedMap().forEach {
-                f.put(it.key, it.value)
-            }
-            result.put(t, f)
-        }
-        return result.build()
-    }
+//
+//    private fun Fragment.toFlipperObjectBuilder(): FlipperObject.Builder {
+//        return FlipperObject.Builder()
+//            .put(FID, this.fid)
+//            .put(NAME, this.name)
+//            .put(FULL_NAME, this.fullName)
+//            .put(TYPE, FlipperObjectType.FRAGMENT.key)
+//    }
+//
+//    private fun FlipperObject.Builder.addLifeCycleEvent(event: FragmentLifeCycle): FlipperObject.Builder {
+//        return this.put(LIFE_CYCLE_EVENT, event.key)
+//    }
+//
+//    @SuppressLint("RestrictedApi")
+//    private fun FlipperObject.Builder.addNavBackStack(fragment: Fragment): FlipperObject.Builder {
+//        return this
+//            .let {
+//                if (fragment.name == "NavHostFragment") {
+//                    try {
+//                        val result = FlipperObject.Builder()
+//                        fragment.findNavController()
+//                            .backStack
+//                            .forEachIndexed { index, navBackStackEntry ->
+//                                result.put(
+//                                    index.toString(),
+//                                    navBackStackEntry.destination.displayName
+//                                )
+//                            }
+//                        it.put(BACK_STACK, result)
+//                    } catch (e: IllegalStateException) {
+//                        it
+//                    }
+//                } else {
+//                    it
+//                }
+//            }
+//    }
+//
+//    @SuppressLint("RestrictedApi")
+//    private fun Fragment.saveAndMapToFlipperObjectBuilder(event: FragmentLifeCycle): FlipperObject.Builder {
+//        return this.toFlipperObjectBuilder()
+//            .addLifeCycleEvent(event)
+//            .addNavBackStack(this)
+//            .also { builder ->
+//                if (!fragmentMap.containsKey(this.name)) {
+//                    fragmentMap[this.name] = hashMapOf(this.fid to builder)
+//                } else {
+//                    fragmentMap[this.name]!![this.fid] = builder
+//                }
+//            }
+//            .let {
+//                this.requireActivity()
+//                    .saveAndMapToFlipperObjectBuilder()
+//            }
+//    }
+//
+//    private fun MutableMap<String, HashMap<String, FlipperObject.Builder>>.toFO(): FlipperObject {
+//        val result = FlipperObject.Builder()
+//        this.toSortedMap().forEach { (t, u) ->
+//            val f = FlipperObject.Builder()
+//            u.toSortedMap().forEach {
+//                f.put(it.key, it.value)
+//            }
+//            result.put(t, f)
+//        }
+//        return result.build()
+//    }
 
 
     ///////////////////////////////////////////////////////////////////////////

@@ -1,14 +1,12 @@
 package fr.afaucogney.mobile.android.flipper
 
 import android.app.Application
-import com.facebook.flipper.BuildConfig
 import com.facebook.flipper.android.AndroidFlipperClient
-import com.facebook.flipper.android.utils.FlipperUtils
 import com.facebook.flipper.core.FlipperClient
 import com.facebook.flipper.plugins.inspector.DescriptorMapping
 import com.facebook.flipper.plugins.inspector.InspectorFlipperPlugin
 import com.facebook.soloader.SoLoader
-import fr.afaucogney.mobile.flipper.FlipperFragmentManagerPlugin
+import fr.afaucogney.mobile.flipper.ImageCanaryFlipperPlugin
 
 class App : Application() {
     override fun onCreate() {
@@ -27,7 +25,7 @@ class App : Application() {
                     /**
                      * initialisation of KtpFlipperPlugin with its default constructor
                      */
-                    addPlugin(FlipperFragmentManagerPlugin(this@App))
+                    addPlugin(ImageCanaryFlipperPlugin(this@App))
                     start()
                 }
 //            }
