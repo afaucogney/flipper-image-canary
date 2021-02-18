@@ -54,4 +54,52 @@ dependencies {
     implementation deps.flipper_soloader
     implementation deps.flipper_reflect
     implementation project(':flipper-image-canary')
+
+
+
+
+}
+
+
+def androidGodEyeEnabled = false
+try {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    androidGodEyeEnabled = properties.getProperty('build.androidGodEyeEnabled', "false").toBoolean()
+} catch (IOException e) {
+}
+
+if (androidGodEyeEnabled) {
+
+//    apply plugin: 'cn.hikyson.methodcanary.plugin'
+
+//    AndroidGodEye {
+//        enableMethodTracer true
+//        // Need method monitor, Attention, close it when in production, e.g: !gradle.startParameter.taskNames.contains("assembleRelease")
+//        enableLifecycleTracer true // need page lifecycle method monitor
+//        instrumentationRuleFilePath 'AndroidGodEye-MethodCanary.js'
+//        instrumentationRuleIncludeClassNamePrefix(['com/edf'])
+//    }
+
+    android {
+        buildTypes {
+            debug {
+                resValue("bool", "android_god_eye_manual_install", "false")
+                resValue("bool", "android_god_eye_need_notification", "true")
+                resValue("integer", "android_god_eye_monitor_port", "5390")
+                resValue("string", "android_god_eye_install_assets_path", "android-godeye-config/install.config")
+            }
+        }
+    }
+
+    dependencies {
+        // Core module
+        debugApi 'cn.hikyson.godeye:godeye-core:3.4.3'
+        // Debug dashboard
+        debugApi 'cn.hikyson.godeye:godeye-monitor:3.4.3'
+        // Extra module, help to monitor network
+//        debugApi 'cn.hikyson.godeye:godeye-okhttp:3.4.3'
+        // Extra module, help to monitor crash/ANR
+//        debugApi 'cn.hikyson.godeye:godeye-xcrash:3.4.3'
+    }
 }

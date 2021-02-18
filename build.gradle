@@ -17,6 +17,7 @@ buildscript {
         // Jitpack
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.18"
+//        classpath "cn.hikyson.methodcanary:plugin:0.15.5"
     }
 }
 

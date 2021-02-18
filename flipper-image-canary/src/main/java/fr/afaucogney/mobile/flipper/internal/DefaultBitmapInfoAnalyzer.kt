@@ -3,7 +3,11 @@ package fr.afaucogney.mobile.flipper.internal
 import android.graphics.drawable.BitmapDrawable
 import android.view.View
 import android.widget.ImageView
+import fr.afaucogney.mobile.android.flipper.R
 import java.lang.ref.WeakReference
+import java.util.*
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 
 class DefaultBitmapInfoAnalyzer : BitmapInfoAnalyzer {
     override fun analyze(view: View): List<BitmapInfo> {
@@ -16,7 +20,10 @@ class DefaultBitmapInfoAnalyzer : BitmapInfoAnalyzer {
                     bitmap.width,
                     bitmap.height,
                     WeakReference(bitmap)
-                )
+                ).apply {
+                    resId = view.getResourceId()
+                    viewParents = view.getViewParents()
+                }
             }
         }
         val vBitMapInfo: BitmapInfo
@@ -36,4 +43,30 @@ class DefaultBitmapInfoAnalyzer : BitmapInfoAnalyzer {
             listOf(ivBitMapInfo)
         } else emptyList()
     }
+
+    fun ImageView.getResourceId(): Int {
+        return this.getPrivateProperty<ImageView, Int>("mResource") ?: -1
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // REFLEXION HELPER
+    ///////////////////////////////////////////////////////////////////////////
+
+    private inline fun <reified T : Any, R> T.getPrivateProperty(name: String): R? =
+        T::class
+            .memberProperties
+            .firstOrNull { it.name == name }
+            ?.apply { isAccessible = true }
+            ?.get(this) as? R
+}
+
+private fun ImageView.getViewParents(): Set<String> {
+    var result = mutableSetOf<String>()
+    result.add(this::class.java.simpleName)
+    var start = this as View
+    while (start != this.rootView) {
+        result.add(start::class.java.simpleName + " - id: " + start.id)
+        start = start.parent as View
+    }
+    return result
 }

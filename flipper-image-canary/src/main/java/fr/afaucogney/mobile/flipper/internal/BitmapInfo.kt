@@ -13,4 +13,6 @@ data class BitmapInfo(
         get() = bitmapHeight > 0 && bitmapWidth > 0
     val size: Int
         get() = bitmapHeight * bitmapWidth
+    var resId: Int? = null
+    var viewParents: Set<String>? = null
 }

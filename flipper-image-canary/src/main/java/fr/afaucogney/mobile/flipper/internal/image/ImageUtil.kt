@@ -18,7 +18,7 @@ object ImageUtil {
         val baos = ByteArrayOutputStream()
         thumbnail.compress(Bitmap.CompressFormat.PNG, 100, baos)
         //        L.d("ImageUtil.convertToBase64 cost %s ms", (System.currentTimeMillis() - startTime));
-        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+        return Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP)
     }
 
     @VisibleForTesting

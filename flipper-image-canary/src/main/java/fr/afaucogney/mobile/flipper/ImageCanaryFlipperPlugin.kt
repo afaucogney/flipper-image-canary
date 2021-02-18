@@ -1,20 +1,17 @@
 package fr.afaucogney.mobile.flipper
 
 import DefaultImageCanaryConfigProvider
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
+import android.content.res.Resources
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver.OnDrawListener
 import androidx.annotation.VisibleForTesting
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.navigation.fragment.findNavController
 import com.facebook.flipper.core.FlipperArray
 import com.facebook.flipper.core.FlipperConnection
 import com.facebook.flipper.core.FlipperObject
@@ -24,7 +21,7 @@ import fr.afaucogney.mobile.flipper.internal.image.ImageUtil
 import java.lang.ref.WeakReference
 
 
-class ImageCanaryFlipperPlugin(app: Application) :
+class ImageCanaryFlipperPlugin(val app: Application) :
     Application.ActivityLifecycleCallbacks,
     FlipperPlugin {
 
@@ -73,13 +70,14 @@ class ImageCanaryFlipperPlugin(app: Application) :
     override fun runInBackground(): Boolean {
         return false
     }
-//
+
+    //
 //    ///////////////////////////////////////////////////////////////////////////
 //    // FLIPPER
 //    ///////////////////////////////////////////////////////////////////////////
 //
     companion object {
-//        const val FID = "id"
+        //        const val FID = "id"
 //        const val NAME = "name"
 //        const val FULL_NAME = "fullName"
 //        const val FRAGMENTS = "fragments"
@@ -446,13 +444,23 @@ class ImageCanaryFlipperPlugin(app: Application) :
                                     imageIssues.add(imageIssue.copy())
                                     imageIssue.imageSrcBase64 =
                                         ImageUtil.convertToBase64(bitmapInfo.bitmap.get(), 200, 200)
+                                    bitmapInfo.resId?.let {
+                                        if (it > 0) {
+                                            imageIssue.resourceId = it
+                                            imageIssue.resourcePath = getResourcePath(it)
+                                        }
+                                    }
+                                    bitmapInfo.bitmap.get()?.let {
+                                        imageIssue.allocatedByteCount =
+                                            it.allocationByteCount / (1000000)
+                                        imageIssue.byteCount = it.byteCount / (1000000)
+                                    }
                                     imageIssue.toFO().build().addAndSend()
                                 }
                             }
                         }
                     }
                 }
-
             }
         )
     }
@@ -477,7 +485,10 @@ class ImageCanaryFlipperPlugin(app: Application) :
     }
 
 
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    override fun onActivityCreated(
+        activity: Activity,
+        savedInstanceState: Bundle?
+    ) {
     }
 
     override fun onActivityStarted(activity: Activity) {
@@ -495,15 +506,20 @@ class ImageCanaryFlipperPlugin(app: Application) :
 
     private fun ImageIssue.toFO(): FlipperObject.Builder {
         return FlipperObject.Builder()
-            .put("ACTIVITY_CLASS", this.activityClassName)
-            .put("ACTIVITY_HASH", this.activityHashCode)
-            .put("BITMAP_HEIGHT", this.bitmapHeight)
-            .put("BITMAP_WITH", bitmapWidth)
-//            .put("BASE_64", imageSrcBase64)
-            .put("IV_HASH", imageViewHashCode)
-            .put("IV_HEIGHT", imageViewHeight)
-            .put("IV_WIDTH", imageViewWidth)
-            .put("ISSUE_TYPE", issueType)
+            .put("activityClass", this.activityClassName)
+            .put("activityHash", this.activityHashCode)
+            .put("bitmapHeight", this.bitmapHeight)
+            .put("bitmapWidth", bitmapWidth)
+            .put("base64", imageSrcBase64)
+            .put("imageViewHash", imageViewHashCode)
+            .put("imageViewHeight", imageViewHeight)
+            .put("imageViewWidth", imageViewWidth)
+            .put("issueType", issueType)
+//            .put("resourRESOURCE_ID", resourceId)
+//            .put("RESOURCE_PATH", resourcePath)
+            .put("byteCount", byteCount)
+            .put("allocatedByteCount", allocatedByteCount)
+
     }
 
     val issues = FlipperArray.Builder()
@@ -515,5 +531,17 @@ class ImageCanaryFlipperPlugin(app: Application) :
 //            .put("tutu",issues.build())
 //            .build()
 //            .send()
+    }
+
+    fun getResourcePath(id: Int): String {
+        try {
+
+            val value = TypedValue()
+            app.resources.getValue(id, value, true)
+            // check value.string if not null - it is not null
+            return value.string.toString()
+        } catch (e: Resources.NotFoundException) {
+            return ""
+        }
     }
 }

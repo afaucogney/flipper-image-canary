@@ -58,8 +58,6 @@ export function Component() {
       instance.setSelection(selectedKeys[0])
   };
 
-
-
    if (Object.keys(data).length < 1) {
          console.log("lf", data)
       return (
@@ -71,6 +69,7 @@ export function Component() {
       console.log("lf", Object.values(data))
       console.log("lf0", Object.values(data)[0])
       console.log("lf1", Object.values(data)[0][1])
+      console.log("lf2", Object.values(data)[0][1]["base64"])
        return (
             <Layout.ScrollContainer>
                 <Divider orientation="left">Large Size</Divider>
@@ -86,7 +85,19 @@ export function Component() {
        );
 
        function renderItem(item) {
-          return Object.values(item)[0]
+          return (
+            <ul>
+                <li>Issue type: {item["issueType"]}</li>
+                <li>Activity class : {item["activityClass"]}</li>
+                <li>Bitmap height: {item["bitmapHeight"]} pixels</li>
+                <li>Bitmap width: {item["bitmapWidth"]} pixels</li>
+                <li>ImageView Height: {item["imageViewHeight"]} pixels</li>
+                <li>ImageView Width: {item["imageViewWidth"]} pixels</li>
+                <li>  <img src={"data:image/png;base64, " + item["base64"]} alt="App image" /> </li>
+                <li>Byte count: {item["byteCount"]} Mbytes</li>
+                <li>Allocated byte count: {item["allocatedByteCount"]} Mbytes</li>
+            </ul>
+          )
        }
    }
 }
