@@ -44,7 +44,7 @@ class DefaultBitmapInfoAnalyzer : BitmapInfoAnalyzer {
         } else emptyList()
     }
 
-    fun ImageView.getResourceId(): Int {
+    private fun ImageView.getResourceId(): Int {
         return this.getPrivateProperty<ImageView, Int>("mResource") ?: -1
     }
 
@@ -58,15 +58,16 @@ class DefaultBitmapInfoAnalyzer : BitmapInfoAnalyzer {
             .firstOrNull { it.name == name }
             ?.apply { isAccessible = true }
             ?.get(this) as? R
-}
 
-private fun ImageView.getViewParents(): Set<String> {
-    var result = mutableSetOf<String>()
-    result.add(this::class.java.simpleName)
-    var start = this as View
-    while (start != this.rootView) {
-        result.add(start::class.java.simpleName + " - id: " + start.id)
-        start = start.parent as View
+
+    private fun ImageView.getViewParents(): Set<String> {
+        val result = mutableSetOf<String>()
+        result.add(this::class.java.simpleName)
+        var start = this as View
+        while (start != this.rootView) {
+            result.add(start::class.java.simpleName + " - id: " + start.id)
+            start = start.parent as View
+        }
+        return result
     }
-    return result
 }

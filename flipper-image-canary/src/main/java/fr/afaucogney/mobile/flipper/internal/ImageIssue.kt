@@ -18,5 +18,6 @@ data class ImageIssue(
     var resourceId: Int? = null
     var allocatedByteCount: Int? = null
     var byteCount: Int? = null
+    var viewParents: List<String> = listOf()
 }
 
